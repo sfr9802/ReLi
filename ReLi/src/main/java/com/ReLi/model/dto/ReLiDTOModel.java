@@ -1,4 +1,4 @@
-package com.ReLi.model;
+package com.ReLi.model.dto;
 
 // ReLiNewDTO
 public class ReLiDTOModel {

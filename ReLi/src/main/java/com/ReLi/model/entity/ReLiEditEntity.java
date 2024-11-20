@@ -1,4 +1,4 @@
-package com.ReLi.model;
+package com.ReLi.model.entity;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -20,6 +20,7 @@ public class ReLiEditEntity {
 	private int editCount;
 	
 	private String editTime;
+	
 	
 	// ReLiEntity's primary key
 	public void setId(Long id) {

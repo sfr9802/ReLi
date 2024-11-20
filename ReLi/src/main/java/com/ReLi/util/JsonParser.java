@@ -1,7 +1,7 @@
 package com.ReLi.util;
 
-import com.ReLi.model.ReLiDTOModel;
-import com.ReLi.model.SavedDTO;
+import com.ReLi.model.dto.ReLiDTOModel;
+import com.ReLi.model.dto.SavedDTO;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import java.util.*;

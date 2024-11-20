@@ -1,5 +1,6 @@
-package com.ReLi.model;
+package com.ReLi.model.dto;
 
+// Service 계층을 Entity로 바꾸고 Util로 변환하는 부분을 빼면 필요 없어질지도
 public class SavedDTO {
 	private Long id;
 	private int userId;
