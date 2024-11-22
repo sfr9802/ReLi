@@ -8,11 +8,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ReLi.model.dto.DtoForEdit;
 import com.ReLi.model.dto.ReLiDTOModel;
+import com.ReLi.model.dto.ReLiDto;
 import com.ReLi.model.dto.SavedDTO;
 import com.ReLi.model.entity.ReLiEditEntity;
 import com.ReLi.model.entity.ReLiEntity;
 import com.ReLi.model.repository.ReLiRepositoryInterface;
 import com.ReLi.service.interfaces.ReLiServiceInterface;
+import com.ReLi.util.*;
 
 	// 1. userId 받아오기 / O
 	// 2. ReLiStatusCode 분기 로직 / 안해도될듯
@@ -23,6 +25,7 @@ import com.ReLi.service.interfaces.ReLiServiceInterface;
 	// |ID|BeforeLiStatus|AfterLiStatus|BeforeLiStatusCode|AfterLiStatusCode|UndoCount|EditTime|
 	// 보통 서비스 계층에서는 Entity, 컨트롤러 에서 DTO사용함
 	// 현재 DTO 입력으로 받는애들 싹 다 Entity로 변경
+
 @Service
 public class ReLiService implements ReLiServiceInterface{
 	
@@ -34,27 +37,20 @@ public class ReLiService implements ReLiServiceInterface{
 	
 	// DB 레코드 추가
 	@Override
-	public ReLiEntity saveReLiEntity(ReLiDTOModel reLiDTOModel) {
+	public ReLiEntity saveReLiEntity(ReLiDto reLiDto) {
 		
-		// 이 부분 Util 쪽에 변환하는 클래스 제작
-		String reLiStatus = reLiDTOModel.getLiStatus();
-		int liStatusCode = reLiDTOModel.getLiStatusCode();
-		String reTime = reLiDTOModel.getRetime();
+		DtoEntityConvertor dtoEntityConvertor = new DtoEntityConvertor();
 		
 		// DTO -> Entity
-		ReLiEntity reLiEntity = new ReLiEntity();
-		reLiEntity.setLiStatus(reLiStatus);
-		reLiEntity.setLiStatusCode(liStatusCode);
-		reLiEntity.setDeletedRecord(false);
-		reLiEntity.setReTime(reTime); 
+		ReLiEntity reLiEntity = dtoEntityConvertor.dtoToReLiEntity(reLiDto);
 		
 		// Entity > DB
 		return reLiRepositoryInterface.save(reLiEntity);
 	}
 	
 	// select*from table where UserId
-	public List<ReLiEntity> readUserAllRecord(ReLiDTOModel reLiDTOModel) {
-		int userId = reLiDTOModel.getUserId();
+	public List<ReLiEntity> readUserAllRecord(ReLiDto reLiDto) {
+		int userId = reLiDto.getUserId();
 	    return reLiRepositoryInterface.findAllByUserId(userId);
 	}
 	
@@ -62,11 +58,12 @@ public class ReLiService implements ReLiServiceInterface{
 		return reLiRepositoryInterface.findAllByUserIdAndDeleteRecord(userId, true);
 	}
 	
+	
 	// update DeletedRecord from table where reLiEntity.UserId
 	// http로 해당 Json 보내주고 Entity로 변환 후 아래 메소드로
-	public ReLiEntity deleteRecord(SavedDTO savedDTO) {
+	public ReLiEntity deleteRecord(ReLiDto reLiDto) {
 		// 매개변수 type ReLiDTOModel로 수정
-		Long id = savedDTO.getId();
+		Long id = reLiDto.getId();
 		Optional<ReLiEntity> reLiEntity = reLiRepositoryInterface.findById(id);
 		if (reLiEntity.isPresent()) {
 			reLiEntity.get().setDeletedRecord(true);
@@ -95,26 +92,19 @@ public class ReLiService implements ReLiServiceInterface{
 		}
 	}
 	
-	
-	public void editRecord(SavedDTO savedDto, DtoForEdit dtoForEdit) {
-		Long id = savedDto.getId();
-		ReLiEntity editTargetEntity = new ReLiEntity();
+	// 입력 파라미터 교체, Dto > Entity 부분 util method사용하는 로직으로 변경.
+	public void editRecord(ReLiDto reLiDto) {
+		Long id = reLiDto.getId();
+		DtoEntityConvertor dtoEntityConvertor = new DtoEntityConvertor();
+		ReLiEntity legacyEntity = new ReLiEntity();
+		
 		Optional<ReLiEntity> reLiEntity = reLiRepositoryInterface.findById(id);
 		if (reLiEntity.isPresent()) {
+			// JpaRepository를 상속받은 인터페이스 엔티티 마다 하나씩 해줘야함...
+			ReLiEditEntity reLiEditEntity = dtoEntityConvertor.dtoToReLiEditEntity(reLiDto);
 			
-			editTargetEntity = reLiEntity.get();
-			
-			ReLiEditEntity reLiEditEntity = new ReLiEditEntity();
-			reLiEditEntity.setId(editTargetEntity.getId());
-			
-			reLiEditEntity.setBeforeLiStatus(editTargetEntity.getLiStatus());
-			reLiEditEntity.setBeforeLiStatusCode(editTargetEntity.getLiStatusCode());
-			
-			reLiEditEntity.setAfterLiStatus(dtoForEdit.getNewReLiStatus());
-			reLiEditEntity.setAfterLiStatusCode(dtoForEdit.getNewReLiStatusCode());
-			
-			reLiEditEntity.setEditTime(dtoForEdit.getEditTime());
-			
+			reLiRepositoryInterface.save(reLiEditEntity);
+			reLiRepositoryInterface.save(legacyEntity);
 			
 		}
 	}

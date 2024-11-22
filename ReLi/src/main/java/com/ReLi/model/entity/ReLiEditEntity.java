@@ -17,15 +17,12 @@ public class ReLiEditEntity {
 	@Size(min = 0, max = 3)
 	private int afterLiStatusCode;
 	
-	private int editCount;
+	
 	
 	private String editTime;
 	
 	
 	// ReLiEntity's primary key
-	public void setId(Long id) {
-		this.id = id;
-	}
 	public Long getId() {
 		return id;
 	}
@@ -64,13 +61,6 @@ public class ReLiEditEntity {
 	}
 	public int getAfterLiStatusCode() {
 		return afterLiStatusCode;
-	}
-	
-	public void setEditCount(int editCount) {
-		this.editCount = editCount;
-	}
-	public int getEditCount() {
-		return editCount;
 	}
 	
 	public void setEditTime(String editTime) {
