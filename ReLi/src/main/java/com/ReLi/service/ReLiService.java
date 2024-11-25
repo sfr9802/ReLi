@@ -3,15 +3,14 @@ package com.ReLi.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ReLi.model.dto.DtoForEdit;
-import com.ReLi.model.dto.ReLiDTOModel;
 import com.ReLi.model.dto.ReLiDto;
-import com.ReLi.model.dto.SavedDTO;
 import com.ReLi.model.entity.ReLiEditEntity;
 import com.ReLi.model.entity.ReLiEntity;
+import com.ReLi.model.repository.ReLiEditRepoInterface;
 import com.ReLi.model.repository.ReLiRepositoryInterface;
 import com.ReLi.service.interfaces.ReLiServiceInterface;
 import com.ReLi.util.*;
@@ -30,9 +29,12 @@ import com.ReLi.util.*;
 public class ReLiService implements ReLiServiceInterface{
 	
 	private final ReLiRepositoryInterface reLiRepositoryInterface;
+	private final ReLiEditRepoInterface reLiEditRepoInterface;
 	
-	public ReLiService(ReLiRepositoryInterface reLiRepositoryInterface) {
+	@Autowired
+	public ReLiService(ReLiRepositoryInterface reLiRepositoryInterface, ReLiEditRepoInterface reLiEditRepoInterface) {
 		this.reLiRepositoryInterface = reLiRepositoryInterface;
+		this.reLiEditRepoInterface = reLiEditRepoInterface;
 	}
 	
 	// DB 레코드 추가
@@ -100,10 +102,14 @@ public class ReLiService implements ReLiServiceInterface{
 		
 		Optional<ReLiEntity> reLiEntity = reLiRepositoryInterface.findById(id);
 		if (reLiEntity.isPresent()) {
+			
 			// JpaRepository를 상속받은 인터페이스 엔티티 마다 하나씩 해줘야함...
 			ReLiEditEntity reLiEditEntity = dtoEntityConvertor.dtoToReLiEditEntity(reLiDto);
 			
-			reLiRepositoryInterface.save(reLiEditEntity);
+			// Edit Table
+			reLiEditRepoInterface.save(reLiEditEntity);
+			
+			// Legacy Table
 			reLiRepositoryInterface.save(legacyEntity);
 			
 		}

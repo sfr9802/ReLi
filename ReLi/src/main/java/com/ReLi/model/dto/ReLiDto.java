@@ -1,5 +1,7 @@
 package com.ReLi.model.dto;
 
+// Lombok 라이브러리를 사용하지 않을 경우 보통 스프링 어노테이션을 사용하지 않음
+// 걍 진짜 순수하게 필드, set,getter만 쓰는게 맞다.
 public class ReLiDto {
 	
 	private Long id;
