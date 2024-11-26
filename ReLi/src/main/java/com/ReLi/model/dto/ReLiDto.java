@@ -2,13 +2,20 @@ package com.ReLi.model.dto;
 
 // Lombok 라이브러리를 사용하지 않을 경우 보통 스프링 어노테이션을 사용하지 않음
 // 걍 진짜 순수하게 필드, set,getter만 쓰는게 맞다.
+// 시계열 정보를 담으려고 하는 이유
+// 시계열 순으로 데이터를 처리하면 분석에 유의미한 결과를 가져올 가능성이 있음.
+// 단순 기록 데이터가 아닌 조금 더 Raw한 데이터가 될 수 있다.
+
 public class ReLiDto {
 	
 	private Long id;
 	private Integer userId;
 	private String liStatus;
 	private String reTime;
+	
+	// NO HTTP Method Status Code
 	private Integer liStatusCode;
+	
 	private String newReLiStatus;
 	private Integer newReLiStatusCode;
 	private String editTime;
@@ -48,6 +55,9 @@ public class ReLiDto {
 			this.editTime = builder.editTime;
 		}
 	}
+	public static Builder builder() {
+        return new Builder();
+    }
 	
 	public static class Builder{
 		private Long id = null;

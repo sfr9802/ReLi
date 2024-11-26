@@ -4,7 +4,7 @@ package com.ReLi.model.dto;
 
 public class IODto {
 	private Long id;
-	private String userId;
+	private Integer userId;
 	private String reLiStatus;
 	private Integer reLiStatusCode;
 	
@@ -16,10 +16,10 @@ public class IODto {
 		return id;
 	}
 	
-	public void setUserId(String userId) {
+	public void setUserId(Integer userId) {
 		this.userId = userId;
 	}
-	public String getUserId() {
+	public Integer getUserId() {
 		return userId;
 	}
 	

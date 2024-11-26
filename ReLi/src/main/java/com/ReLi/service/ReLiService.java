@@ -2,11 +2,13 @@ package com.ReLi.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ReLi.model.dto.IODto;
 import com.ReLi.model.dto.ReLiDto;
 import com.ReLi.model.entity.ReLiEditEntity;
 import com.ReLi.model.entity.ReLiEntity;
@@ -39,21 +41,29 @@ public class ReLiService implements ReLiServiceInterface{
 	
 	// DB 레코드 추가
 	@Override
-	public ReLiEntity saveReLiEntity(ReLiDto reLiDto) {
+	public ReLiEntity saveReLiEntity(IODto ioDto) {
 		
-		DtoEntityConvertor dtoEntityConvertor = new DtoEntityConvertor();
-		
+		ReLiDto reLiDto = ReLiMapper.IoDtoToReLiDto(ioDto);
 		// DTO -> Entity
-		ReLiEntity reLiEntity = dtoEntityConvertor.dtoToReLiEntity(reLiDto);
+		ReLiEntity reLiEntity = DtoEntityConvertor.dtoToReLiEntity(reLiDto);
 		
 		// Entity > DB
 		return reLiRepositoryInterface.save(reLiEntity);
 	}
 	
 	// select*from table where UserId
-	public List<ReLiEntity> readUserAllRecord(ReLiDto reLiDto) {
+	public List<IODto> readUserAllRecord(IODto ioDto) {
+		ReLiDto reLiDto = ReLiMapper.IoDtoToReLiDto(ioDto);
 		int userId = reLiDto.getUserId();
-	    return reLiRepositoryInterface.findAllByUserId(userId);
+		
+		// 전체 레코드에서 userId 가 해당되는것만 조회
+		List<ReLiEntity> listReLiEntity = reLiRepositoryInterface.findAllByUserId(userId);
+		
+		// List<Entity> -> List<IODto> 스트림 사용하여 처리
+		List<IODto> dtoList = listReLiEntity.stream()
+                .map(DtoEntityConvertor::reLiEntityToIODto)
+                .collect(Collectors.toList());
+	    return dtoList;
 	}
 	
 	public List<ReLiEntity> readUsersAllDeletedRecord(int userId){
@@ -63,7 +73,10 @@ public class ReLiService implements ReLiServiceInterface{
 	
 	// update DeletedRecord from table where reLiEntity.UserId
 	// http로 해당 Json 보내주고 Entity로 변환 후 아래 메소드로
-	public ReLiEntity deleteRecord(ReLiDto reLiDto) {
+	// 조회하는거 빼도될것같은... 어차피 ioDto 로 해당 id 랑 다 받아오니가
+	public ReLiEntity deleteRecord(IODto ioDto) {
+		ReLiDto reLiDto = ReLiMapper.IoDtoToReLiDto(ioDto);
+		
 		// 매개변수 type ReLiDTOModel로 수정
 		Long id = reLiDto.getId();
 		Optional<ReLiEntity> reLiEntity = reLiRepositoryInterface.findById(id);
@@ -95,25 +108,26 @@ public class ReLiService implements ReLiServiceInterface{
 	}
 	
 	// 입력 파라미터 교체, Dto > Entity 부분 util method사용하는 로직으로 변경.
-	public void editRecord(ReLiDto reLiDto) {
-		Long id = reLiDto.getId();
-		DtoEntityConvertor dtoEntityConvertor = new DtoEntityConvertor();
-		ReLiEntity legacyEntity = new ReLiEntity();
-		
-		Optional<ReLiEntity> reLiEntity = reLiRepositoryInterface.findById(id);
-		if (reLiEntity.isPresent()) {
-			
-			// JpaRepository를 상속받은 인터페이스 엔티티 마다 하나씩 해줘야함...
-			ReLiEditEntity reLiEditEntity = dtoEntityConvertor.dtoToReLiEditEntity(reLiDto);
-			
-			// Edit Table
-			reLiEditRepoInterface.save(reLiEditEntity);
-			
-			// Legacy Table
-			reLiRepositoryInterface.save(legacyEntity);
-			
-		}
+	public ReLiEntity editRecord(IODto ioDto) {
+	    // 1. DTO를 ReLiDto로 변환
+	    ReLiDto reLiDto = ReLiMapper.IoDtoToReLiDto(ioDto);
+
+	    // 2. Legacy Entity 조회 및 검증
+	    ReLiEntity legacyEntity = reLiRepositoryInterface.findById(reLiDto.getId())
+	            .orElseThrow(() -> new IllegalArgumentException("Entity not found for ID: " + reLiDto.getId()));
+
+	    // 3. Edit Entity 생성 및 저장
+	    ReLiEditEntity reLiEditEntity = DtoEntityConvertor.dtoToReLiEditEntity(reLiDto);
+	    reLiEditRepoInterface.save(reLiEditEntity);
+
+	    // 4. Legacy Entity 업데이트 후 저장
+	    legacyEntity.setLiStatus(reLiEditEntity.getAfterLiStatus());
+	    legacyEntity.setLiStatusCode(reLiEditEntity.getAfterLiStatusCode());
+	    reLiRepositoryInterface.save(legacyEntity);
+
+	    return legacyEntity;
 	}
+
 	
 
 

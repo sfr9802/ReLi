@@ -23,7 +23,7 @@ public class ReLiEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    private int userId;
+    private Integer userId;
     
 //  private Long userReLiIndex;
     
@@ -35,7 +35,7 @@ public class ReLiEntity {
     
     // 0,1,2,3 One Hot Encoding, 그냥 0~3으로 입력 받아도 문제없을듯
     @Size(min = 0, max = 3)
-    private int liStatusCode;
+    private Integer liStatusCode;
     
     private boolean deletedRecord;
 
@@ -49,19 +49,10 @@ public class ReLiEntity {
         return id;
     }
     
-    // userReLiIndex getter setter
-//    public void setUserReLiIndex(Long userReLiIndex) {
-//    	this.userReLiIndex = userReLiIndex;
-//    }
-//    public Long getUserReLiIndex() {
-//    	return userReLiIndex;
-//    }
-    
-    // userId getter setter
-    public void setUserId(int userId) {
+    public void setUserId(Integer userId) {
     	this.userId = userId;
     }
-    public int getUserid() {
+    public Integer getUserid() {
     	return userId;
     }
 
@@ -82,10 +73,10 @@ public class ReLiEntity {
     }
     
     // liStatusCode getter setter
-    public void setLiStatusCode(int liStatusCode){
+    public void setLiStatusCode(Integer liStatusCode){
         this.liStatusCode = liStatusCode;
     }
-    public int getLiStatusCode(){
+    public Integer getLiStatusCode(){
         return liStatusCode;
     }
     

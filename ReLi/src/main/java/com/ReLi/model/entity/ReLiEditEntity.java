@@ -13,9 +13,9 @@ public class ReLiEditEntity {
 	private String afterLiStatus;
 	
 	@Size(min = 0, max = 3)
-	private int beforeLiStatusCode;
+	private Integer beforeLiStatusCode;
 	@Size(min = 0, max = 3)
-	private int afterLiStatusCode;
+	private Integer afterLiStatusCode;
 	
 	
 	
@@ -49,17 +49,17 @@ public class ReLiEditEntity {
 		return afterLiStatus;
 	}
 	
-	public void setBeforeLiStatusCode(int beforeLiStatusCode) {
+	public void setBeforeLiStatusCode(Integer beforeLiStatusCode) {
 		this.beforeLiStatusCode = beforeLiStatusCode;
 	}
-	public int getBeforeLiStatusCode() {
+	public Integer getBeforeLiStatusCode() {
 		return beforeLiStatusCode;
 	}
 	
-	public void setAfterLiStatusCode(int afterLiStatusCode) {
+	public void setAfterLiStatusCode(Integer afterLiStatusCode) {
 		this.afterLiStatusCode = afterLiStatusCode;
 	}
-	public int getAfterLiStatusCode() {
+	public Integer getAfterLiStatusCode() {
 		return afterLiStatusCode;
 	}
 	

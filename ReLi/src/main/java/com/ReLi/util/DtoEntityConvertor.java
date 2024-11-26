@@ -4,7 +4,8 @@ import com.ReLi.model.dto.*;
 import com.ReLi.model.entity.*;
 
 public class DtoEntityConvertor {
-	public ReLiEntity dtoToReLiEntity(ReLiDto reLiDto) {
+	
+	public static ReLiEntity dtoToReLiEntity(ReLiDto reLiDto) {
 		ReLiEntity reLiEntity = new ReLiEntity();
 		reLiEntity.setUserId(reLiDto.getUserId());
 		reLiEntity.setLiStatus(reLiDto.getLiStatus());
@@ -14,7 +15,7 @@ public class DtoEntityConvertor {
 		return reLiEntity;
 	}
 	
-	public ReLiEditEntity dtoToReLiEditEntity(ReLiDto reLiDto) {
+	public static ReLiEditEntity dtoToReLiEditEntity(ReLiDto reLiDto) {
 		ReLiEditEntity reLiEditEntity = new ReLiEditEntity();
 		reLiEditEntity.setUserId(reLiDto.getUserId());
 		
@@ -27,6 +28,15 @@ public class DtoEntityConvertor {
 		reLiEditEntity.setEditTime(reLiDto.getEditTime());
 		
 		return reLiEditEntity;
+	}
+	
+	public static IODto reLiEntityToIODto(ReLiEntity reLiEntity) {
+		IODto ioDto = new IODto();
+		ioDto.setId(reLiEntity.getId());
+		ioDto.setUserId(reLiEntity.getUserid());
+		ioDto.setReLiStatus(reLiEntity.getLiStatus());
+		ioDto.setReLiStatusCode(reLiEntity.getLiStatusCode());
+		return ioDto;
 	}
 	
 }
