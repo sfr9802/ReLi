@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -48,8 +49,9 @@ public class ReLiController {
 	// service 에서 수정
 	// ResponseEntity 사용, List<Entity> 타입은 스트림 사용해서 DTO로 변환하고
 	// ResponseEntity 로 래핑하여 리턴해주면 뚝딱 -> service 에서 처리
+	// 입력을 그냥 userid 저거 파라미터로 받아가지고 하면 안되나
 	@GetMapping("/reLiAllList/{userId}")
-	public ResponseEntity<List<IODto>> reLiAllList(@RequestBody IODto ioDto) {
+	public ResponseEntity<List<IODto>> reLiAllList(@PathVariable IODto ioDto) {
 		List<IODto> listIoDto = reLiService.readUserAllRecord(ioDto);
 		return ResponseEntity.ok(listIoDto);
 	}
